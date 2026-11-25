@@ -1,0 +1,453 @@
+/* просто|легко: the shop's own room as the page.
+   White brick wall, teal walls, the striped column, black steel shelving, the enamel counter plate. */
+
+:root {
+  color-scheme: light;
+
+  /* the room */
+  --wall: oklch(97.8% 0.004 200);          /* white brick */
+  --mortar: oklch(90.5% 0.007 200);        /* brick courses */
+  --paper: oklch(98.6% 0.003 195);         /* enamel plate, text on teal */
+  --teal: oklch(52.8% 0.090 195);          /* #007B7B, the logo and the walls */
+  --teal-2: oklch(46% 0.082 197);
+  --teal-deep: oklch(33% 0.045 222);       /* far wall, footer */
+  --teal-line: oklch(98.6% 0.003 195 / 0.42);
+  --slate: oklch(44% 0.030 235);           /* third stripe of the column */
+  --ink: oklch(18% 0.008 220);             /* black steel */
+  --ink-2: oklch(30% 0.010 220);
+  --muted: oklch(45% 0.012 215);
+  --rule: oklch(84% 0.008 205);
+  --signal: oklch(67% 0.200 35);           /* the brief's neon, «Записаться» only */
+  --signal-2: oklch(72% 0.170 38);
+  --edge-light: oklch(100% 0 0 / 0.16);    /* neutral image edge on dark grounds */
+
+  --font: "Avenir Next", Avenir, Bahnschrift, "Segoe UI Variable Display", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  --pole-w: 12px;
+  --header-h: 60px;
+  --bar-h: 3.625rem;
+  --steel: 4px;
+  --gutter: clamp(16px, 4vw, 56px);
+  --section: clamp(64px, 9vw, 128px);
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Browsers without OKLCH (Safari < 15.4, Chrome < 111) get the same palette in sRGB, computed from the tokens above */
+@supports not (color: oklch(0% 0 0)) {
+  :root {
+    --wall: #f5f9f9;
+    --mortar: #dbe1e1;
+    --paper: #f8fbfb;
+    --teal: #007b7b;
+    --teal-2: #006668;
+    --teal-deep: #173b46;
+    --teal-line: rgba(248, 251, 251, 0.42);
+    --slate: #435561;
+    --ink: #0e1214;
+    --ink-2: #282f31;
+    --muted: #4e5759;
+    --rule: #c5cccd;
+    --signal: #f75932;
+    --signal-2: #fb784f;
+    --edge-light: rgba(255, 255, 255, 0.16);
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { overflow-x: clip; }
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--header-h) + 16px);
+  scrollbar-color: var(--teal) var(--wall);
+  accent-color: var(--teal);
+}
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+
+body {
+  margin: 0;
+  padding-left: var(--pole-w);
+  padding-bottom: calc(var(--bar-h) + env(safe-area-inset-bottom));
+  background: var(--wall);
+  color: var(--ink-2);
+  font-family: var(--font);
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+}
+::selection { background: var(--teal); color: var(--paper); }
+
+h1, h2, h3, p, ul, dl, dd, figure, blockquote { margin: 0; }
+ul { padding: 0; list-style: none; }
+h1, h2, h3 { color: var(--ink); font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; text-wrap: balance; hyphens: auto; overflow-wrap: break-word; min-width: 0; }
+h2 { font-size: clamp(2.25rem, 1.5rem + 3vw, 4rem); }
+h3 { font-size: 1.375rem; line-height: 1.15; }
+p, li, dd, figcaption, .price-table tbody th span, .tag-note { text-wrap: pretty; }
+img { display: block; max-width: 100%; height: auto; }
+
+/* inline text links: taller hit area without moving the line (vertical padding on inline boxes doesn't affect layout) */
+.lead a, .map-link a, .facts a, .map-fallback a { padding-block: 10px; }
+
+a { color: var(--teal); text-decoration-thickness: 1px; text-underline-offset: 0.18em; transition: color 160ms var(--ease); }
+a:hover { color: var(--ink); }
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+.hero-teal :focus-visible, .teal-wall :focus-visible, .site-footer :focus-visible { outline-color: var(--paper); }
+
+.sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+.visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.icon { width: 24px; height: 24px; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.icon-sm { width: 18px; height: 18px; }
+
+.skip-link { position: absolute; left: calc(var(--pole-w) + 12px); top: 12px; transform: translateY(calc(-100% - 24px)); z-index: 100; padding: 10px 16px; background: var(--ink); color: var(--paper); font-weight: 700; }
+.skip-link:focus { transform: none; }
+.skip-link:hover { color: var(--paper); }
+
+.wrap { width: 100%; max-width: 1240px; margin-inline: auto; padding-inline: var(--gutter); }
+
+/* ---------- One white brick wall behind the whole page: mortar drawn as a mask so the colour stays a token ---------- */
+body { position: relative; }
+body::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background: var(--mortar);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='56'%3E%3Cpath d='M0 .75H120M0 28.75H120M.75 0V28M60.75 28V56' stroke='%23000' stroke-width='1.5' fill='none'/%3E%3C/svg%3E") 0 0 / 120px 56px repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='56'%3E%3Cpath d='M0 .75H120M0 28.75H120M.75 0V28M60.75 28V56' stroke='%23000' stroke-width='1.5' fill='none'/%3E%3C/svg%3E") 0 0 / 120px 56px repeat;
+}
+
+/* ---------- The barber pole: fixed down the left edge, turns with the scroll ---------- */
+.pole { position: fixed; left: 0; top: 0; bottom: 0; width: var(--pole-w); overflow: hidden; z-index: 70; background: var(--paper); }
+.pole-stripes {
+  position: absolute; left: 0; right: 0; top: -120px; bottom: -120px;
+  background: repeating-linear-gradient(135deg, var(--teal) 0 16px, var(--paper) 16px 30px, var(--slate) 30px 42px, var(--paper) 42px 56px);
+  will-change: transform;
+}
+
+/* ---------- Demo bar ---------- */
+.demo-bar { padding: 6px var(--gutter); background: var(--ink); color: var(--paper); font-size: 0.75rem; line-height: 1.35; text-align: center; }
+
+/* ---------- Header: a steel rail ---------- */
+/* the header is painted in the logo's own teal, so the logo plate runs straight into it */
+.site-header { position: sticky; top: 0; z-index: 60; background: var(--teal); color: var(--paper); border-bottom: 2px solid var(--ink); }
+.site-header :focus-visible { outline-color: var(--paper); }
+.header-inner { height: var(--header-h); display: flex; align-items: center; gap: 16px; padding-inline: var(--gutter); max-width: 1240px; margin-inline: auto; }
+.brand { display: block; margin-right: auto; }
+/* the horizontal logo: the face and the lettering cut from the logo file (assets/logo/logo-horizontal*), never re-set in a web font */
+.brand-mark { display: block; height: 44px; width: auto; }
+
+.nav-toggle { width: 44px; height: 44px; display: none; place-items: center; background: transparent; color: var(--paper); border: 2px solid var(--paper); border-radius: 0; cursor: pointer; transition: background-color 160ms var(--ease); }
+.js .nav-toggle { display: grid; }
+.nav-toggle:hover { background: var(--teal-2); }
+.nav-toggle:active { transform: scale(0.94); }
+.nav-toggle-lines, .nav-toggle-lines::before, .nav-toggle-lines::after { display: block; width: 20px; height: 2px; background: currentColor; position: relative; }
+.nav-toggle-lines { transition: background-color 120ms var(--ease); }
+.nav-toggle-lines::before, .nav-toggle-lines::after { content: ""; position: absolute; left: 0; transition: transform 220ms var(--ease); }
+.nav-toggle-lines::before { transform: translateY(-6px) rotate(0deg); }
+.nav-toggle-lines::after { transform: translateY(6px) rotate(0deg); }
+.nav-toggle[aria-expanded="true"] .nav-toggle-lines { background: transparent; }
+.nav-toggle[aria-expanded="true"] .nav-toggle-lines::before { transform: translateY(0) rotate(45deg); }
+.nav-toggle[aria-expanded="true"] .nav-toggle-lines::after { transform: translateY(0) rotate(-45deg); }
+
+/* without JS the menu is a plain list in the header's flow; with JS it drops down over the page */
+.site-nav { flex-basis: 100%; background: var(--teal); }
+html:not(.js) .site-header { position: static; }
+html:not(.js) .header-inner { height: auto; min-height: var(--header-h); flex-wrap: wrap; row-gap: 0; }
+.js .site-nav { display: none; position: absolute; left: 0; right: 0; top: 100%; border-bottom: var(--steel) solid var(--ink); }
+.js .site-nav.is-open { display: block; animation: menu-in 200ms var(--ease); }
+@keyframes menu-in { from { opacity: 0; transform: translateY(-6px); } }
+.site-nav ul { padding: 4px var(--gutter) 12px; }
+.site-nav a { display: block; padding: 12px 0; color: var(--paper); font-weight: 700; font-size: 1.125rem; text-decoration: none; border-bottom: 1px solid var(--teal-line); }
+.site-nav li:last-child a { border-bottom: 0; }
+.site-nav a:hover { color: var(--paper); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.3em; }
+.site-nav a:active { color: var(--wall); }
+.site-header .header-cta { display: none; white-space: nowrap; }
+
+/* ---------- Controls ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 48px; padding: 0 24px;
+  border: 2px solid var(--ink); border-radius: 0;
+  font: inherit; font-weight: 700; font-size: 1rem; line-height: 1;
+  max-width: 100%; text-align: center; text-decoration: none; white-space: normal; cursor: pointer;
+  transition-property: background-color, color, transform;
+  transition-duration: 160ms, 160ms, 100ms;
+  transition-timing-function: var(--ease);
+}
+.btn:active { transform: scale(0.97); }
+.btn-signal { background: var(--signal); color: var(--ink); }
+.btn-signal:hover { background: var(--signal-2); color: var(--ink); }
+.btn-ink { background: var(--ink); color: var(--paper); }
+.btn-ink:hover { background: var(--ink-2); color: var(--paper); }
+.btn-lg { min-height: 56px; padding: 0 28px; font-size: 1.0625rem; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; }
+
+/* ---------- First viewport ---------- */
+.hero-wall { padding: 28px var(--gutter) 28px; container-type: inline-size; }
+/* each phrase is ~9.04em wide in this face: capping at 10.8% of the wall keeps it on one line at any width;
+   max(…, 1.6rem) lets enlarged system text still grow the head (it then wraps between words, never inside one) */
+.hero-title { font-size: min(clamp(2.125rem, 0.9rem + 5.43vw, 5.75rem), max(10.8cqi, 1.6rem)); line-height: 1; letter-spacing: -0.03em; max-width: none; hyphens: none; word-break: normal; overflow-wrap: normal; }
+.hero-lead { margin: 14px 0 20px; max-width: 30ch; font-size: 1.0625rem; color: var(--ink-2); }
+.hero .btn-lg { min-height: 48px; padding: 0 18px; }
+
+.hero-teal { background: var(--teal); color: var(--paper); padding: 24px var(--gutter) 40px; display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr); align-items: start; }
+/* the price tag hangs off the photo frame's lower corner; the door plate gets the full width below */
+.hero-photo { grid-row: 1; }
+.hero-teal .tag { grid-column: 1 / -1; grid-row: 1; align-self: end; justify-self: end; margin: 0 -6px -14px 0; z-index: 1; }
+.plate { grid-column: 1 / -1; grid-row: 2; margin-top: 8px; }
+.steel { border: var(--steel) solid var(--ink); background: var(--ink); }
+.steel img { width: 100%; object-fit: cover; }
+.hero-photo { grid-column: 1 / -1; }
+.hero-photo img { aspect-ratio: 4 / 3; }
+
+.plate { background: var(--paper); color: var(--ink); border: 2px solid var(--ink); padding: 14px 18px; display: grid; gap: 2px; font-size: 0.9375rem; line-height: 1.4; }
+.plate-hours { font-size: 1.0625rem; }
+.plate-hours strong { font-weight: 700; font-variant-numeric: tabular-nums; }
+.rating-badge { display: block; width: 150px; height: 50px; margin-top: 8px; border: 0; }
+.plate-rating { display: inline-block; padding-block: 10px; margin: -6px 0 -12px; color: var(--ink); font-weight: 600; }
+.icon-star { width: 18px; height: 18px; fill: var(--teal); stroke: var(--ink); stroke-width: 1.2; }
+
+.tag {
+  position: relative; display: grid; gap: 2px; align-self: start;
+  padding: 12px 16px 12px 26px; max-width: min(16rem, 100%);
+  background: var(--paper); color: var(--ink); text-decoration: none;
+  border: 2px solid var(--ink);
+  transform: rotate(-3deg); transform-origin: 8px 50%;
+  transition: transform 220ms var(--ease);
+}
+.tag::before { content: ""; position: absolute; left: 8px; top: 50%; width: 9px; height: 9px; margin-top: -4.5px; border: 2px solid var(--ink); border-radius: 50%; background: var(--teal); }
+.tag:hover { transform: rotate(0deg); color: var(--ink); }
+@media (prefers-reduced-motion: reduce) {
+  .tag, .btn, .tab, a, .nav-toggle-lines, .nav-toggle-lines::before, .nav-toggle-lines::after { transition: none; }
+  .tag:hover { transform: rotate(-3deg); }
+  .btn:active, .tab:active, .nav-toggle:active { transform: none; }
+  .js .site-nav.is-open { animation: none; }
+}
+.tag-name { font-weight: 700; font-size: 0.9375rem; }
+.tag-price { font-weight: 700; font-size: 1.5rem; line-height: 1.1; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+.tag-note { font-size: 0.8125rem; color: var(--muted); }
+
+/* ---------- Sections ---------- */
+.section { padding-block: var(--section); }
+/* anchor jumps land on the heading, not on the section's top padding */
+.section[id] { scroll-margin-top: calc(clamp(20px, 3vw, 40px) - var(--section)); }
+.head { display: grid; gap: 16px; margin-bottom: clamp(32px, 4vw, 56px); }
+.lead { font-size: 1rem; max-width: 44ch; color: var(--ink-2); }
+
+/* ---------- Price list: the black steel shelving ---------- */
+.tabs { display: none; }
+.js .tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-bottom: 16px; }
+.tab {
+  min-height: 44px; padding: 6px 8px; line-height: 1.15; text-align: center;
+  background: var(--paper); color: var(--ink);
+  border: 2px solid var(--ink); border-radius: 0;
+  font: inherit; font-weight: 700; font-size: 0.875rem; cursor: pointer;
+  transition-property: background-color, color, transform;
+  transition-duration: 160ms, 160ms, 100ms;
+  transition-timing-function: var(--ease);
+}
+.tab:hover { background: var(--mortar); }
+.tab:active { transform: scale(0.97); }
+.tab[aria-selected="true"], .tab[aria-selected="true"]:hover { background: var(--ink); color: var(--paper); }
+
+.rack { border: var(--steel) solid var(--ink); background: var(--paper); }
+.shelf { padding: 0 16px 4px; container-type: inline-size; }
+.shelf-label { margin: 0 -16px; padding: 10px 16px; background: var(--ink); color: var(--paper); font-size: 1rem; font-weight: 700; letter-spacing: 0; }
+
+.price-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums lining-nums; }
+.price-table thead th { padding: 12px 0 8px 8px; font-size: 0.8125rem; font-weight: 600; color: var(--muted); text-align: right; border-bottom: 2px solid var(--ink); }
+.price-table thead th:first-child { padding-left: 0; }
+.price-table tbody tr { border-bottom: 1px solid var(--rule); }
+.price-table tbody tr:last-child { border-bottom: 0; }
+.price-table tbody th { padding: 14px 8px 14px 0; text-align: left; vertical-align: top; font-weight: 700; color: var(--ink); line-height: 1.35; }
+.price-table tbody th span { display: block; margin-top: 4px; font-size: 0.9375rem; font-weight: 400; color: var(--muted); line-height: 1.4; }
+.price-table td { width: 1%; padding: 14px 0 14px 14px; text-align: right; vertical-align: top; white-space: nowrap; font-weight: 700; color: var(--ink); }
+.price-table td[colspan] { width: auto; }
+.price-note { margin-top: 16px; font-size: 0.875rem; color: var(--muted); }
+
+/* ---------- Teal wall: sets and promotions ---------- */
+.teal-wall { background: var(--teal); color: var(--paper); }
+.teal-wall h2, .teal-wall h3, .teal-wall .lead { color: var(--paper); }
+.board { border-top: var(--steel) solid var(--ink); }
+.board-row { display: grid; gap: 12px; padding: 20px 0; border-bottom: 2px solid var(--teal-line); }
+.board-row h3 { font-size: clamp(1.5rem, 1.1rem + 1.4vw, 2.25rem); }
+.duo { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+.duo > div { min-width: 8em; }
+.duo dt { font-size: 0.875rem; }
+.duo dd { font-size: clamp(1.5rem, 1.2rem + 1vw, 2rem); font-weight: 700; line-height: 1.1; letter-spacing: -0.01em; font-variant-numeric: tabular-nums lining-nums; color: var(--paper); }
+
+.promo { margin-top: clamp(56px, 7vw, 96px); scroll-margin-top: clamp(20px, 3vw, 40px); }
+.promo h2 { margin-bottom: 24px; }
+.promo-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+.promo-item { display: grid; gap: 12px; align-content: start; padding: 24px; background: var(--teal-deep); border: var(--steel) solid var(--ink); }
+.promo-item h3 { font-size: clamp(1.5rem, 1.1rem + 1.2vw, 2rem); }
+.promo-item p { max-width: 34ch; }
+
+/* ---------- Proofs: claim beside the review that backs it ---------- */
+#reviews { padding-block: clamp(56px, 7vw, 96px); scroll-margin-top: calc(clamp(20px, 3vw, 40px) - clamp(56px, 7vw, 96px)); }
+.proofs { display: grid; grid-template-columns: minmax(0, 1fr); column-gap: 40px; border-top: var(--steel) solid var(--ink); }
+.proof { display: grid; gap: 6px; align-content: start; padding: 18px 0 20px; border-bottom: 2px solid var(--ink); }
+.proof h3 { font-size: 1.375rem; }
+.quote blockquote p { font-size: 1.0625rem; font-weight: 500; font-style: italic; line-height: 1.45; color: var(--ink-2); max-width: 46ch; }
+.quote figcaption { margin-top: 4px; font-size: 0.875rem; font-weight: 600; color: var(--teal-2); }
+
+/* ---------- Barbers: enamel cards on the teal wall ---------- */
+#masters { background: var(--teal); color: var(--paper); border-top: var(--steel) solid var(--ink); }
+#masters h2 { color: var(--paper); }
+/* phone: a swipeable rail, one card centred and the next peeking; the active card steps forward */
+.barbers {
+  display: flex; gap: 12px; overflow-x: auto; overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory; scrollbar-width: none;
+  margin-inline: calc(-1 * var(--gutter)); padding: 8px var(--gutter);
+}
+.barbers::-webkit-scrollbar { display: none; }
+.barbers:focus-visible { outline-offset: -3px; }
+.barber { flex: 0 0 84%; scroll-snap-align: center; transition: transform 450ms var(--ease), opacity 450ms var(--ease); }
+.js .barber:not(.is-active) { transform: scale(0.93); opacity: 0.72; }
+.barbers-nav { display: none; }
+.js .barbers-nav { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 16px; }
+.barbers-arrow { width: 44px; height: 44px; display: grid; place-items: center; background: transparent; color: var(--paper); border: 2px solid var(--paper); border-radius: 0; cursor: pointer; transition: background-color 160ms var(--ease); }
+.barbers-arrow:hover { background: var(--teal-2); }
+.barbers-arrow:active { transform: scale(0.94); }
+.barbers-dots { display: flex; }
+.barbers-dots button { width: 28px; height: 44px; display: grid; place-items: center; padding: 0; background: none; border: 0; cursor: pointer; }
+.barbers-dots button::before { content: ""; width: 10px; height: 10px; border: 2px solid var(--paper); transition: background-color 200ms var(--ease), transform 200ms var(--ease); }
+.barbers-dots button[aria-current="true"]::before { background: var(--paper); transform: scale(1.2); }
+@media (prefers-reduced-motion: reduce) { .barber, .barbers-dots button::before { transition: none; } }
+.barber { display: flex; flex-direction: column; background: var(--paper); color: var(--ink); border: var(--steel) solid var(--ink); }
+.barber-photo { border-bottom: var(--steel) solid var(--ink); background: var(--ink); }
+.barber-photo img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; object-position: 50% 22%; }
+.barber-body { display: flex; flex-direction: column; flex: 1; gap: 6px; padding: 18px 20px 20px; }
+.barber h3 { font-size: 1.5rem; }
+.barber-level { font-size: 0.9375rem; color: var(--muted); }
+.barber-rating { display: flex; align-items: center; gap: 6px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.barber-bio { font-size: 0.9375rem; color: var(--ink-2); margin-bottom: 8px; }
+.barber .btn { margin-top: auto; align-self: flex-start; }
+
+/* ---------- The reception counter (enamel plate, steel top), set against a teal wall ---------- */
+#contacts { background: var(--teal); color: var(--paper); border-top: var(--steel) solid var(--ink); }
+#contacts h2, #contacts .map-link a { color: var(--paper); }
+#contacts :focus-visible { outline-color: var(--paper); }
+#contacts .counter :focus-visible { outline-color: var(--ink); }
+.visit { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; }
+.counter {
+  padding: 24px;
+  border-top: 14px solid var(--ink);
+  background: var(--paper);
+  color: var(--ink);
+  container-type: inline-size;
+}
+.facts { margin-bottom: 24px; }
+.facts div { display: grid; grid-template-columns: 6rem minmax(0, 1fr); gap: 12px; padding: 12px 0; border-bottom: 2px solid var(--ink); }
+.facts dt { font-size: 0.9375rem; font-weight: 500; }
+.facts dd { font-weight: 700; }
+.facts a { color: var(--ink); }
+.visit-photo img { aspect-ratio: 4 / 3; }
+.visit-photo figcaption { padding: 10px 14px; background: var(--ink); color: var(--paper); font-size: 0.9375rem; }
+
+.map-frame { position: relative; height: 380px; margin-top: 32px; background: var(--mortar); }
+.map-frame iframe { position: relative; display: block; width: 100%; height: 100%; border: 0; }
+.map-fallback { position: absolute; inset: 0; display: grid; place-content: center; gap: 6px; padding: 16px; text-align: center; color: var(--ink-2); }
+.map-fallback a { color: var(--ink); }
+.map-link { margin-top: 12px; font-weight: 600; }
+
+
+/* ---------- Footer: the far wall, one compact row ---------- */
+.site-footer { background: var(--teal-deep); color: var(--paper); padding-block: 24px; }
+.footer-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 32px; }
+.footer-brand { display: block; }
+.footer-logo { display: block; height: 40px; width: auto; outline: 1px solid var(--edge-light); outline-offset: -1px; }
+/* phone: one tidy column, one fact per line; from 40rem the facts run in a row */
+.footer-links { display: grid; gap: 0; font-size: 0.9375rem; width: 100%; }
+.footer-links li { padding-block: 2px; }
+.site-footer a { color: var(--paper); display: inline-block; padding: 10px 0; }
+.site-footer a:hover { color: var(--wall); text-decoration-thickness: 2px; }
+.footer-legal { flex-basis: 100%; padding-top: 14px; border-top: 1px solid var(--teal-line); font-size: 0.8125rem; color: var(--paper); }
+
+/* ---------- Mobile booking bar ---------- */
+.mobile-bar {
+  position: fixed; left: var(--pole-w); right: 0; bottom: 0; z-index: 65;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px;
+  padding: 7px 10px calc(7px + env(safe-area-inset-bottom));
+  background: var(--paper); border-top: 1px solid var(--ink);
+  container-type: inline-size;
+}
+.mobile-bar .btn { min-height: 42px; padding: 6px 10px; font-size: 0.9375rem; line-height: 1.15; border-width: 1.5px; }
+/* exit is quicker and quieter than the entrance */
+.js .mobile-bar { transform: translateY(110%); visibility: hidden; transition: transform 150ms cubic-bezier(0.7, 0, 0.84, 0), visibility 0s linear 150ms; }
+.js .bar-on .mobile-bar { transform: none; visibility: visible; transition: transform 260ms var(--ease), visibility 0s; }
+@media (prefers-reduced-motion: reduce) { .js .mobile-bar, .js .bar-on .mobile-bar { transition: none; } }
+
+/* ---------- ≥ 40rem ---------- */
+@media (min-width: 40rem) {
+  :root { --pole-w: 20px; }
+  .board-row { grid-template-columns: minmax(0, 1fr) auto; align-items: end; }
+  .footer-links { display: flex; flex-wrap: wrap; align-items: center; gap: 0 24px; width: auto; }
+  .hero-wall { padding: 40px var(--gutter) 48px; }
+  .hero-lead { margin: 20px 0 28px; font-size: 1.1875rem; }
+  .lead { font-size: 1.1875rem; }
+  .hero .btn-lg { min-height: 56px; padding: 0 28px; }
+  .price-table td { width: 5.5rem; }
+  .hero-teal .tag { margin: 0 -10px -14px 0; }
+}
+
+/* ---------- ≥ 48rem ---------- */
+@media (min-width: 48rem) {
+  .promo-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .proofs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .visit { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); align-items: start; }
+  .barbers { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; overflow: visible; margin-inline: 0; padding: 0; }
+  .barber, .js .barber:not(.is-active) { transform: none; opacity: 1; }
+  .js .barbers-nav { display: none; }
+  .barber-photo img { aspect-ratio: 1 / 1; }
+}
+
+/* ---------- ≥ 60rem: desktop ---------- */
+@media (min-width: 60rem) {
+  :root { --pole-w: 44px; --header-h: 72px; }
+  body { padding-bottom: 0; }
+  .pole { border-right: 2px solid var(--ink); }
+  .mobile-bar { display: none; }
+  .nav-toggle, .js .nav-toggle { display: none; }
+  .js .site-nav, .site-nav { display: block; position: static; flex-basis: auto; background: none; border: 0; margin-left: auto; }
+  html:not(.js) .site-header { position: sticky; }
+  html:not(.js) .header-inner { height: var(--header-h); flex-wrap: nowrap; }
+  .site-nav ul { display: flex; gap: 24px; padding: 0; }
+  .site-nav a { padding: 12px 0; border: 0; font-size: 1rem; }
+  .brand { margin-right: 0; }
+  .brand-mark { height: 52px; }
+  .site-header .header-cta { display: inline-flex; }
+
+  .hero { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); min-height: calc(100svh - var(--header-h) - 28px); }
+  .hero-wall { display: flex; align-items: center; padding: 56px clamp(32px, 5vw, 88px); }
+  .hero-teal { align-content: center; padding: 48px clamp(32px, 4vw, 64px); gap: 20px; }
+
+  /* every shelf is on show at once: the rack, not tabs */
+  .js .tabs { display: none; }
+  .rack { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .rack-col + .rack-col { border-left: var(--steel) solid var(--ink); }
+  .rack-col .shelf + .shelf { border-top: var(--steel) solid var(--ink); }
+  .shelf { padding: 0 24px 8px; }
+  .shelf-label { margin: 0 -24px; padding: 12px 24px; }
+
+  .map-frame { height: 420px; }
+}
+
+/* ---------- Large text on a narrow shelf (WCAG 1.4.4): prices drop under the name ----------
+   13em of the shelf's own font: never true at normal size on a phone, true from about 150% text. */
+@container (max-width: 13em) {
+  .price-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .price-table tbody tr { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 12px; padding: 12px 0; }
+  .price-table tbody th { grid-column: 1 / -1; padding: 0 0 4px; }
+  .price-table td, .price-table td[colspan] { width: auto; padding: 0; text-align: left; white-space: normal; }
+  .price-table td[colspan] { grid-column: 1 / -1; }
+  .price-table td::before { content: attr(data-label); display: block; font-size: 0.8125rem; font-weight: 600; color: var(--muted); }
+}
+
+/* Large text in the phone bar: the two buttons stack instead of clipping their labels */
+@container (max-width: 18em) {
+  .mobile-bar .btn { grid-column: 1 / -1; }
+}
+
+/* Large text at the counter: each label sits above its value */
+@container (max-width: 12em) {
+  .facts div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+}

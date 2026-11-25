@@ -1,0 +1,25 @@
+# Working files: not part of the published site
+PROMPT.md
+PRODUCT.md
+DESIGN.md
+.impeccable/
+.claude/
+.DS_Store
+
+# Originals and design masters stay local
+assets/_originals/
+assets/logo/logo.jpg
+assets/logo/logo-horizontal.png
+assets/logo/wordmark.png
+assets/logo/wordmark-white.png
+assets/photos/collage-from-yandex.jpg
+
+# Photos the page does not use (kept locally, not published)
+assets/photos/barber-hands-1.jpg
+assets/photos/barber-hands-2*
+assets/photos/facade-night.jpg
+assets/photos/interior-angle.jpg
+assets/photos/scissors-closeup.jpg
+
+# Provenance sidecars for rasters
+assets/**/*.json
